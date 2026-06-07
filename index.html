@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSES · Dynamic Programming</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/cpp.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Animated Background Canvas -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- Noise overlay -->
+<div class="noise-overlay"></div>
+
+<div class="app-shell">
+
+    <!-- ═══ HEADER ═══ -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="logo-mark">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect x="2" y="2" width="12" height="12" rx="2" fill="var(--accent)" opacity="0.9"/>
+                    <rect x="18" y="2" width="12" height="12" rx="2" fill="var(--accent2)" opacity="0.6"/>
+                    <rect x="2" y="18" width="12" height="12" rx="2" fill="var(--accent2)" opacity="0.6"/>
+                    <rect x="18" y="18" width="12" height="12" rx="2" fill="var(--accent)" opacity="0.9"/>
+                    <line x1="14" y1="8" x2="18" y2="8" stroke="var(--glow)" stroke-width="1.5"/>
+                    <line x1="8" y1="14" x2="8" y2="18" stroke="var(--glow)" stroke-width="1.5"/>
+                    <line x1="24" y1="14" x2="24" y2="18" stroke="var(--glow)" stroke-width="1.5"/>
+                    <line x1="14" y1="24" x2="18" y2="24" stroke="var(--glow)" stroke-width="1.5"/>
+                </svg>
+            </div>
+            <div class="topbar-title">
+                <span class="title-prefix">CSES</span>
+                <span class="title-sep">/</span>
+                <span class="title-main">Dynamic Programming</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="badge-pill">
+                <span class="badge-dot"></span>
+                <span>C++17</span>
+            </div>
+            <a href="https://cses.fi/problemset/" target="_blank" class="ext-link">
+                CSES Problemset
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M2 10L10 2M10 2H5M10 2V7"/>
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- ═══ MAIN LAYOUT ═══ -->
+    <div class="workspace">
+
+        <!-- ══ SIDEBAR ══ -->
+        <aside class="sidebar">
+
+            <div class="sidebar-header">
+                <p class="sidebar-label">Problems</p>
+                <div class="search-wrap">
+                    <svg class="search-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="6" cy="6" r="4"/>
+                        <path d="M9.5 9.5L13 13"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Filter problems…" autocomplete="off" spellcheck="false">
+                </div>
+            </div>
+
+            <div id="problemList" class="problem-list"></div>
+
+            <!-- DP illustration at bottom of sidebar -->
+            <div class="sidebar-art">
+                <div class="dp-grid-viz" id="dpViz"></div>
+                <p class="sidebar-art-label">Dynamic Programming</p>
+            </div>
+
+        </aside>
+
+        <!-- ══ VIEWER ══ -->
+        <section class="viewer">
+
+            <!-- Empty state -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-glyph">
+                    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                        <rect x="10" y="10" width="20" height="20" rx="3" fill="var(--accent)" opacity="0.15" stroke="var(--accent)" stroke-width="1"/>
+                        <rect x="34" y="10" width="20" height="20" rx="3" fill="var(--accent2)" opacity="0.15" stroke="var(--accent2)" stroke-width="1"/>
+                        <rect x="58" y="10" width="12" height="20" rx="3" fill="var(--accent)" opacity="0.07" stroke="var(--border)" stroke-width="1"/>
+                        <rect x="10" y="34" width="20" height="20" rx="3" fill="var(--accent2)" opacity="0.15" stroke="var(--accent2)" stroke-width="1"/>
+                        <rect x="34" y="34" width="20" height="20" rx="3" fill="var(--accent)" opacity="0.3" stroke="var(--accent)" stroke-width="1.5"/>
+                        <rect x="58" y="34" width="12" height="20" rx="3" fill="var(--accent2)" opacity="0.15" stroke="var(--accent2)" stroke-width="1"/>
+                        <rect x="10" y="58" width="20" height="12" rx="3" fill="var(--accent)" opacity="0.07" stroke="var(--border)" stroke-width="1"/>
+                        <rect x="34" y="58" width="20" height="12" rx="3" fill="var(--accent2)" opacity="0.15" stroke="var(--accent2)" stroke-width="1"/>
+                        <rect x="58" y="58" width="12" height="12" rx="3" fill="var(--accent)" opacity="0.4" stroke="var(--accent)" stroke-width="1.5"/>
+                        <path d="M20 20 L44 44" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" opacity="0.4"/>
+                        <path d="M44 20 L44 44" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3 3" opacity="0.4"/>
+                        <path d="M20 44 L44 44" stroke="var(--accent2)" stroke-width="1" stroke-dasharray="3 3" opacity="0.4"/>
+                    </svg>
+                </div>
+                <h2 class="empty-title">Select a Problem</h2>
+                <p class="empty-sub">Browse the problem list and click to load the solution.</p>
+
+                <div class="concept-cards">
+                    <div class="concept-card">
+                        <div class="concept-icon">⚡</div>
+                        <div class="concept-name">Memoization</div>
+                        <div class="concept-desc">Cache overlapping subproblems top-down</div>
+                    </div>
+                    <div class="concept-card">
+                        <div class="concept-icon">🔢</div>
+                        <div class="concept-name">Tabulation</div>
+                        <div class="concept-desc">Build solution bottom-up iteratively</div>
+                    </div>
+                    <div class="concept-card">
+                        <div class="concept-icon">🧩</div>
+                        <div class="concept-name">Optimal Substructure</div>
+                        <div class="concept-desc">Optimal solution contains optimal sub-solutions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code view -->
+            <div class="code-view" id="codeView" style="display:none;">
+                <div class="viewer-header">
+                    <div class="viewer-meta">
+                        <div class="viewer-breadcrumb">
+                            <span class="bc-root">CSES DP</span>
+                            <span class="bc-sep">›</span>
+                            <span class="bc-current" id="problemTitle">—</span>
+                        </div>
+
+                    </div>
+                    <div class="viewer-actions">
+                        <a id="problemLink" href="#" target="_blank" class="btn-ghost">
+                            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M2 11L11 2M11 2H6M11 2V7"/>
+                            </svg>
+                            Problem
+                        </a>
+                        <button id="copyBtn" class="btn-primary">
+                            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="4" y="4" width="8" height="8" rx="1.5"/>
+                                <path d="M9 4V2.5A1.5 1.5 0 007.5 1H2.5A1.5 1.5 0 001 2.5V7.5A1.5 1.5 0 002.5 9H4"/>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-toolbar">
+                        <div class="lang-label">
+                            <span class="lang-dot"></span>
+                            C++17
+                        </div>
+                        <div class="line-count" id="lineCount">—</div>
+                    </div>
+                    <pre><code id="codeBlock" class="language-cpp">// Select a problem from the left panel.</code></pre>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+</div>
+
+<!-- Copy toast -->
+<div class="toast" id="toast">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--success)" stroke-width="2">
+        <path d="M2 7l3.5 3.5L12 3"/>
+    </svg>
+    Copied to clipboard
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -28,6 +28,11 @@
         "title": "Grid Paths I",
         "file": "solutions/06_grid_path.cpp",
         "link": "https://cses.fi/problemset/task/1638/"
+    },
+    {
+        "title": "Book Shop",
+        "file": "solutions/07_book_shop.cpp",
+        "link": "https://cses.fi/problemset/task/1639/"
     }
     
 ]
